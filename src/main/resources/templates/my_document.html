@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>My Documents | NeuralKnowledgeApp</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <style>
+        body {
+            background: radial-gradient(circle at top, #0f172a, #020617);
+            color: #e5e7eb;
+        }
+
+        /* DOCUMENT CARD */
+        .doc-card {
+            background: #020617;
+            border-radius: 14px;
+            padding: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .doc-card:hover {
+            background: #020617dd;
+            transform: scale(1.01);
+        }
+
+        .doc-name {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        /* PREVIEW */
+        .preview-box {
+            background: #020617;
+            border-radius: 18px;
+            padding: 20px;
+            min-height: 550px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            position: sticky;
+            top: 90px;
+        }
+
+        .empty-preview {
+            opacity: 0.6;
+            text-align: center;
+            margin-top: 200px;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-dark bg-dark px-4">
+    <span class="navbar-brand">NeuralKnowledgeApp</span>
+    <a th:href="@{/dashboard}" class="btn btn-outline-light btn-sm">Dashboard</a>
+</nav>
+
+<div class="container-fluid mt-4 px-4">
+
+    <h4 class="mb-4">📄 My Uploaded Documents</h4>
+
+    <div class="row">
+
+        <!-- ================= LEFT: DOCUMENT LIST ================= -->
+        <div class="col-md-5">
+
+            <div th:if="${#lists.isEmpty(documents)}"
+                 class="alert alert-warning">
+                No documents uploaded yet.
+            </div>
+
+            <div th:each="doc : ${documents}" class="doc-card">
+
+                <!-- CLICK TO PREVIEW -->
+                <div class="doc-name"
+                     th:text="${doc.name}"
+                     th:onclick="'loadPdf(' + ${doc.id} + ')'">
+                </div>
+
+                <small class="text-secondary">Click to preview</small>
+
+                <div class="mt-2">
+                    <a th:href="@{/download(id=${doc.id})}"
+                       class="btn btn-success btn-sm">
+                        Download
+                    </a>
+
+                    <a th:href="@{/delete(id=${doc.id})}"
+                       class="btn btn-danger btn-sm"
+                       onclick="return confirm('Delete this document?')">
+                        Delete
+                    </a>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ================= RIGHT: PDF PREVIEW ================= -->
+        <div class="col-md-7">
+
+            <div class="preview-box">
+
+                <h5>Document Preview</h5>
+                <hr>
+
+                <iframe id="pdfViewer" width="100%" height="600">
+					This browser does not support PDF preview.
+				</iframe>
+
+                <div id="emptyPreview" class="empty-preview">
+                    📄 Select a document to preview PDF
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<!-- ================= JS ================= -->
+<script>
+    function loadPdf(docId) {
+        document.getElementById("pdfViewer").src =
+            "/document/view/" + docId;
+
+        document.getElementById("emptyPreview").style.display = "none";
+    }
+</script>
+
+</body>
+</html>
